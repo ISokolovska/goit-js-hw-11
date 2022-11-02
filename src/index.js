@@ -1,25 +1,34 @@
+import './css/styles.css';
 import Notiflix from 'notiflix';
 import axios from 'axios';
+import SimpleLightbox from 'simplelightbox';
+import 'simplelightbox/dist/simple-lightbox.min.css';
 import { queryImage } from './api/fetch';
 
 const searchForm = document.querySelector('.search-form');
-const gallery = document.querySelector('.gallery');
+const galleryImage = document.querySelector('.gallery');
+const buttonLoadMore = document.querySelector('.load-more');
 
-// const handleForm = e => {
-//   e.preventDefault();
-//   const query = e.target.searchQuery.value;
-//   const data = queryImage(query).then(response => {
-//     console.log(response);
-//     // return response;
-//   });
-// };
-
+let query = '';
 const handleForm = async e => {
   e.preventDefault();
-  const query = e.target.searchQuery.value;
+  let perPage = 40;
+  query = e.target.searchQuery.value;
+  galleryImage.innerHTML = '';
   const response = await queryImage(query);
-  console.log(response.hits);
-  renderMarkup(response.hits);
+  if (response.totalHits) {
+    if (response.totalHits > perPage) {
+      buttonLoadMore.classList.remove('is-hidden');
+      console.log(response);
+    }
+    renderMarkup(response.hits);
+    console.log(response.totalHits);
+    Notiflix.Notify.success(`Hooray! We found ${response.totalHits} images.`);
+  } else {
+    Notiflix.Notify.failure(
+      'Sorry, there are no images matching your search query. Please try again.'
+    );
+  }
 };
 
 searchForm.addEventListener('submit', handleForm);
@@ -37,19 +46,19 @@ const renderMarkup = data => {
         downloads,
       }) => {
         return `<div class="photo-card">
-                <img src="${webformatURL}" alt="${tags}" width="300" loading="lazy" />
+                <img src="${webformatURL}" alt="${tags}" width="250" loading="lazy" />
                 <div class="info">
                 <p class="info-item">
-                <b>Likes: ${likes}</b>
+                <b>Likes: </b>${likes}
                 </p>
                 <p class="info-item">
-                <b>Views: ${views}</b>
+                <b>Views: </b>${views}
                 </p>
                 <p class="info-item">
-                <b>Comments: ${comments}</b>
+                <b>Comments: </b>${comments}
                 </p>
                 <p class="info-item">
-                <b>Downloads: ${downloads}</b>
+                <b>Downloads: </b>${downloads}
                 </p>
                 </div>
                 </div>
@@ -57,18 +66,24 @@ const renderMarkup = data => {
       }
     )
     .join('');
-  gallery.innerHTML = markup;
+  galleryImage.innerHTML += markup;
 };
 
-// let page = 1;
-// refs.button.addEventListener('click', () => {
-//   page += 1;
-//   fetchCharacters(page)
-//     .then(data => {
-//       if (data.pages === page) {
-//         refs.button.disabled = true;
-//       }
-//       appendMarkup(data.docs);
-//     })
-//     .catch(error => console.log('error', error));
-// });
+let page = 1;
+buttonLoadMore.addEventListener('click', async () => {
+  page += 1;
+  const response = await queryImage(query, page);
+  console.log(response);
+  if (response.totalHits / page < 40) {
+    buttonLoadMore.classList.add('is-hidden');
+    Notiflix.Notify.info(
+      'We are sorry, but you have reached the end of search results.'
+    );
+  }
+  renderMarkup(response.hits);
+});
+
+let gallery = new SimpleLightbox('.gallery a', {
+  captionsData: 'alt',
+  captionDelay: 250,
+});
