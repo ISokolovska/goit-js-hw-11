@@ -10,6 +10,7 @@ const galleryImage = document.querySelector('.gallery');
 const buttonLoadMore = document.querySelector('.load-more');
 
 let query = '';
+
 const handleForm = async e => {
   e.preventDefault();
   let perPage = 40;
@@ -22,6 +23,7 @@ const handleForm = async e => {
       console.log(response);
     }
     renderMarkup(response.hits);
+    lightbox.refresh();
     console.log(response.totalHits);
     Notiflix.Notify.success(`Hooray! We found ${response.totalHits} images.`);
   } else {
@@ -45,8 +47,9 @@ const renderMarkup = data => {
         comments,
         downloads,
       }) => {
-        return `<a href="${largeImageURL}"><div class="photo-card">
-                <img src="${webformatURL}" alt="${tags}" width="250" loading="lazy" />
+        return `<div class="photo-card">
+                <a href="${largeImageURL}">
+                <img src="${webformatURL}" alt="${tags}" width="250" loading="lazy" /></a>
                 <div class="info">
                 <p class="info-item">
                 <b>Likes: </b>${likes}
@@ -62,7 +65,6 @@ const renderMarkup = data => {
                 </p>
                 </div>
                 </div>
-                </a>
               `;
       }
     )
@@ -85,6 +87,5 @@ buttonLoadMore.addEventListener('click', async () => {
 });
 
 let lightbox = new SimpleLightbox('.gallery a', {
-  // captionsData: 'alt',
-  // captionDelay: 250,
+  captionDelay: 250,
 });
