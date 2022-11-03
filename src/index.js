@@ -77,13 +77,22 @@ buttonLoadMore.addEventListener('click', async () => {
   page += 1;
   const response = await queryImage(query, page);
   console.log(response);
-  if (response.totalHits / page < 40) {
+  if (response.totalHits / response.hits.length < page) {
     buttonLoadMore.classList.add('is-hidden');
     Notiflix.Notify.info(
       'We are sorry, but you have reached the end of search results.'
     );
   }
   renderMarkup(response.hits);
+  lightbox.refresh();
+  const { height: cardHeight } = document
+    .querySelector('.gallery')
+    .firstElementChild.getBoundingClientRect();
+
+  window.scrollBy({
+    top: cardHeight * 2,
+    behavior: 'smooth',
+  });
 });
 
 let lightbox = new SimpleLightbox('.gallery a', {
