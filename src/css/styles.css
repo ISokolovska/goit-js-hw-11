@@ -59,10 +59,16 @@ input {
     padding: 30px;
 }
 
-/* .info {
-   
+.info-item {
+    display: flex;
+    flex-direction: column;
+    font-size: 10px;
 }
 
-p {
-  
-} */
+.info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+   
+}

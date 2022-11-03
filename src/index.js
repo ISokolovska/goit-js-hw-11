@@ -45,7 +45,7 @@ const renderMarkup = data => {
         comments,
         downloads,
       }) => {
-        return `<div class="photo-card">
+        return `<a href="${largeImageURL}"><div class="photo-card">
                 <img src="${webformatURL}" alt="${tags}" width="250" loading="lazy" />
                 <div class="info">
                 <p class="info-item">
@@ -62,6 +62,7 @@ const renderMarkup = data => {
                 </p>
                 </div>
                 </div>
+                </a>
               `;
       }
     )
@@ -83,7 +84,7 @@ buttonLoadMore.addEventListener('click', async () => {
   renderMarkup(response.hits);
 });
 
-let gallery = new SimpleLightbox('.gallery a', {
-  captionsData: 'alt',
-  captionDelay: 250,
+let lightbox = new SimpleLightbox('.gallery a', {
+  // captionsData: 'alt',
+  // captionDelay: 250,
 });
